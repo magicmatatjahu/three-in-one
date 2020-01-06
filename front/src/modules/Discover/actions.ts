@@ -1,0 +1,58 @@
+import { actionCreator } from "../../common";
+import { Types } from "../types";
+
+export const types: Types = {
+  FETCH_PLACES_ATTEMPT: 'FETCH_PLACES_ATTEMPT',
+  FETCH_PLACES_SUCCESS: 'FETCH_PLACES_SUCCESS',
+  FETCH_PLACES_FAILURE: 'FETCH_PLACES_FAILURE',
+
+  CREATE_PLACE_ATTEMPT: 'CREATE_PLACE_ATTEMPT',
+  CREATE_PLACE_SUCCESS: 'CREATE_PLACE_SUCCESS',
+  CREATE_PLACE_FAILURE: 'CREATE_PLACE_FAILURE',
+
+  REMOVE_PLACE_ATTEMPT: 'REMOVE_PLACE_ATTEMPT',
+  REMOVE_PLACE_SUCCESS: 'REMOVE_PLACE_SUCCESS',
+  REMOVE_PLACE_FAILURE: 'REMOVE_PLACE_FAILURE',
+
+  EDIT_PLACE_ATTEMPT: 'EDIT_PLACE_ATTEMPT',
+  EDIT_PLACE_SUCCESS: 'EDIT_PLACE_SUCCESS',
+  EDIT_PLACE_FAILURE: 'EDIT_PLACE_FAILURE',
+};
+
+export function createActions() {
+  const fetchPlacesAttempt = actionCreator(types.FETCH_PLACES_ATTEMPT);
+  const fetchPlacesSuccess = actionCreator(types.FETCH_PLACES_SUCCESS);
+  const fetchPlacesFailure = actionCreator<Error>(types.FETCH_PLACES_FAILURE);
+
+  const createPlaceAttempt = actionCreator(types.CREATE_PLACE_ATTEMPT);
+  const createPlaceSuccess = actionCreator(types.CREATE_PLACE_SUCCESS);
+  const createPlaceFailure = actionCreator<Error>(types.CREATE_PLACE_FAILURE);
+
+  const removePlaceAttempt = actionCreator(types.REMOVE_PLACE_ATTEMPT);
+  const removePlaceSuccess = actionCreator(types.REMOVE_PLACE_SUCCESS);
+  const removePlaceFailure = actionCreator<Error>(types.REMOVE_PLACE_FAILURE);
+
+  const editPlaceAttempt = actionCreator(types.EDIT_PLACE_ATTEMPT);
+  const editPlaceSuccess = actionCreator(types.EDIT_PLACE_SUCCESS);
+  const editPlaceFailure = actionCreator<Error>(types.EDIT_PLACE_FAILURE);
+
+  return {
+    fetchPlacesAttempt,
+    fetchPlacesSuccess,
+    fetchPlacesFailure,
+
+    createPlaceAttempt,
+    createPlaceSuccess,
+    createPlaceFailure,
+
+    removePlaceAttempt,
+    removePlaceSuccess,
+    removePlaceFailure,
+
+    editPlaceAttempt,
+    editPlaceSuccess,
+    editPlaceFailure,
+  }
+}
+
+export type DiscoverActions = ReturnType<typeof createActions>;
