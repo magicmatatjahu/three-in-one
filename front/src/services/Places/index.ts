@@ -1,63 +1,83 @@
 import { Service } from "../types";
 import { 
-  PLACES_STORAGE,
   Place,
+  DeserializedPlace,
   CreatePlaceDTO,
   EditPlaceDTO,
 } from "./types";
 
-import { AuthService } from "../Auth";
-import { HttpClient } from "../HttpClient";
-import { LocalStorageService } from "../LocalStorage";
+import { GraphQLClient } from "../GraphQL";
+
+import {
+  ADD_PLACE_MUTATION,
+  ADD_PLACE_MUTATION_VARIABLES,
+  DELETE_PLACE_MUTATION,
+  DELETE_PLACE_MUTATION_VARIABLES,
+} from "./mutations";
+import {
+  PLACES_QUERY,
+} from "./queries";
 
 export class PlacesService extends Service {
   constructor(
-    private readonly _authSvc: AuthService,
-    private readonly _httpClient: HttpClient,
-    private readonly _localStorageSvc: LocalStorageService<Place>,
+    private readonly _gqlClient: GraphQLClient,
   ) {
     super()
   }
 
   async fetchPlaces(): Promise<Place[]> {
-    return this._localStorageSvc.getList();
+    const response = await this._gqlClient.query<{ places: DeserializedPlace[] }>(
+      PLACES_QUERY,
+    );
+    return this._serializePlaces(response.data.places);
   };
   
   async createPlace(dto: CreatePlaceDTO) {
-    // await this._httpClient.post(url, dto);
+    const response = await this._gqlClient.mutation<{ user: { id: string } }, ADD_PLACE_MUTATION_VARIABLES>(
+      ADD_PLACE_MUTATION,
+      {
+        lat: dto.location.lat,
+        lng: dto.location.lng,
+        name: dto.name,
+        description: dto.description,
+        visitedDate: dto.visitedDate,
+        placeId: dto.name,
+      }
+    );
+    return response.data.user.id;
   }
 
-  async removePlace(id: number) {
-    // await this._httpClient.post(url, dto);
+  async removePlace(id: number): Promise<boolean> {
+    const response = await this._gqlClient.mutation<{ ok: boolean }, DELETE_PLACE_MUTATION_VARIABLES>(
+      DELETE_PLACE_MUTATION,
+      {
+        id
+      }
+    );
+    return response.data.ok;
   }
 
   async editPlace(dto: EditPlaceDTO) {
-    // await this._httpClient.post(url, dto);
+    // await this._httpClient.put(`/places/${dto.id}`, dto);
   }
 
-  private removeById(id: number, key?: string)  {
-    const nextList = this._localStorageSvc.getList(key).filter(u => u.id !== id);
-    this._localStorageSvc.setList(nextList, key);
-  };
-
-  private getById(id: number, key?: string) {
-    const unit = this._localStorageSvc.getList(key).find(u => u.id === id);
-    return unit || null;
-  };
+  private _serializePlaces(places: DeserializedPlace[]): Place[] {
+    return places.map(place => ({
+      ...place,
+      location: {
+        lat: place.lat,
+        lng: place.lng,
+      }
+    } as Place))
+  }
 }
 
 export const configurePlacesService = ({
-  authSvc,
-  httpClient,
+  gqlClient,
 }: {
-  authSvc: AuthService,
-  httpClient: HttpClient,
+  gqlClient: GraphQLClient,
 }): PlacesService => {
-  const sessionStorageSvc = new LocalStorageService<Place>({ key: PLACES_STORAGE });
-
   return new PlacesService(
-    authSvc,
-    httpClient, 
-    sessionStorageSvc
+    gqlClient, 
   );
 };
