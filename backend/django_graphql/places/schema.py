@@ -48,7 +48,7 @@ class DeletePlace(graphene.Mutation):
         if user.is_anonymous:
             raise Exception('Not logged in!')
 
-        place = Place.objects.get(pk=id)
+        place = Place.objects.get(pk=id, user=user)
         place.delete()
 
         return DeletePlace(ok=True)
