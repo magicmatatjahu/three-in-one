@@ -17,18 +17,18 @@ export class GraphQLClient extends Service {
     const headers = this._prepateHeaders();
 
     return this._httpClient.post<T>(
-      `/graphql`,
+      `graphql`,
       JSON.stringify({ query, variables }),
       { headers },
     );
   }
 
-  async mutation<T = any, V = any>(mutation: string, variables?: V): Promise<AxiosResponse<T>> {
+  async mutation<T = any, V = any>(query: string, variables?: V): Promise<AxiosResponse<T>> {
     const headers = this._prepateHeaders();
 
     return this._httpClient.post<T>(
-      `/graphql`,
-      JSON.stringify({ mutation, variables }),
+      `graphql`,
+      JSON.stringify({ query, variables }),
       { headers },
     );
   }
